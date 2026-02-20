@@ -1,5 +1,5 @@
 {
-  "name": "@tinyland-inc/tinyland-user-resolution",
+  "name": "@tummycrypt/tinyland-user-resolution",
   "version": "0.1.0",
   "description": "Unified user resolution across database and profile markdown sources",
   "type": "module",
@@ -41,5 +41,9 @@
   },
   "engines": {
     "node": ">=22.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }
