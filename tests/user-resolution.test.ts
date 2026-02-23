@@ -12,9 +12,9 @@ import {
 } from '../src/index.js';
 import type { UserResolutionConfig, AdminUser, Profile } from '../src/index.js';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+
+
+
 
 function makeAdminUser(overrides: Partial<AdminUser> = {}): AdminUser {
   return {
@@ -50,9 +50,9 @@ function createMockConfig(overrides: Partial<UserResolutionConfig> = {}): UserRe
   };
 }
 
-// ---------------------------------------------------------------------------
-// Test Suite
-// ---------------------------------------------------------------------------
+
+
+
 
 describe('tinyland-user-resolution', () => {
   afterEach(() => {
@@ -61,9 +61,9 @@ describe('tinyland-user-resolution', () => {
     vi.restoreAllMocks();
   });
 
-  // =========================================================================
-  // configure / getConfig / resetConfig
-  // =========================================================================
+  
+  
+  
 
   describe('configure / getConfig / resetConfig', () => {
     it('should throw when getConfig is called before configure', () => {
@@ -118,9 +118,9 @@ describe('tinyland-user-resolution', () => {
     });
   });
 
-  // =========================================================================
-  // resolveUser
-  // =========================================================================
+  
+  
+  
 
   describe('resolveUser', () => {
     describe('database resolution', () => {
@@ -252,21 +252,21 @@ describe('tinyland-user-resolution', () => {
       });
 
       it('should use displayName fallback: name -> displayName -> slug', async () => {
-        // name takes priority
+        
         const p1: Profile = { slug: 's', metadata: { name: 'Name', displayName: 'DisplayName' } };
         configure(createMockConfig({ loadProfiles: vi.fn().mockResolvedValue([p1]) }));
         expect((await resolveUser('s'))!.displayName).toBe('Name');
 
         clearUserResolutionCache();
 
-        // displayName when no name
+        
         const p2: Profile = { slug: 's2', metadata: { displayName: 'DN' } };
         configure(createMockConfig({ loadProfiles: vi.fn().mockResolvedValue([p2]) }));
         expect((await resolveUser('s2'))!.displayName).toBe('DN');
 
         clearUserResolutionCache();
 
-        // slug when neither
+        
         const p3: Profile = { slug: 'fallback-slug', metadata: {} };
         configure(createMockConfig({ loadProfiles: vi.fn().mockResolvedValue([p3]) }));
         expect((await resolveUser('fallback-slug'))!.displayName).toBe('fallback-slug');
@@ -600,9 +600,9 @@ describe('tinyland-user-resolution', () => {
     });
   });
 
-  // =========================================================================
-  // Profile cache
-  // =========================================================================
+  
+  
+  
 
   describe('profile cache', () => {
     it('should cache a resolved profile on first lookup', async () => {
@@ -614,7 +614,7 @@ describe('tinyland-user-resolution', () => {
       await resolveUser('cached');
       await resolveUser('cached');
 
-      // loadProfiles should only be called once for the same handle
+      
       expect(loadMock).toHaveBeenCalledTimes(1);
     });
 
@@ -638,7 +638,7 @@ describe('tinyland-user-resolution', () => {
       const result1 = await resolveUser('recover');
       expect(result1).toBeNull();
 
-      // Second call should hit the null cache entry
+      
       const result2 = await resolveUser('recover');
       expect(result2).toBeNull();
       expect(loadMock).toHaveBeenCalledTimes(1);
@@ -659,7 +659,7 @@ describe('tinyland-user-resolution', () => {
         await resolveUser('ttl-user');
         expect(loadMock).toHaveBeenCalledTimes(1);
 
-        // Advance time past TTL (60 seconds)
+        
         mockTime += 61_000;
 
         await resolveUser('ttl-user');
@@ -683,7 +683,7 @@ describe('tinyland-user-resolution', () => {
         await resolveUser('fresh');
         expect(loadMock).toHaveBeenCalledTimes(1);
 
-        // Advance time but within TTL
+        
         mockTime += 30_000;
 
         await resolveUser('fresh');
@@ -705,7 +705,7 @@ describe('tinyland-user-resolution', () => {
       expect(rb!.handle).toBe('b');
       expect(loadMock).toHaveBeenCalledTimes(2);
 
-      // Re-query should hit cache for both
+      
       const ra2 = await resolveUser('a');
       const rb2 = await resolveUser('b');
       expect(ra2!.handle).toBe('a');
@@ -744,13 +744,13 @@ describe('tinyland-user-resolution', () => {
         await resolveUser('y');
         expect(loadMock).toHaveBeenCalledTimes(2);
 
-        // Expire
+        
         mockTime += 61_000;
 
-        // Looking up 'x' again triggers cache rebuild
+        
         const result = await resolveUser('x');
         expect(loadMock).toHaveBeenCalledTimes(3);
-        // y is no longer cached since the whole cache was rebuilt
+        
       } finally {
         Date.now = realDateNow;
       }
@@ -765,16 +765,16 @@ describe('tinyland-user-resolution', () => {
       await resolveUser('dbonly');
       await resolveUser('dbonly');
 
-      // Database is checked each time
+      
       expect(findMock).toHaveBeenCalledTimes(2);
-      // Profiles are never called since db resolves first
+      
       expect(loadMock).not.toHaveBeenCalled();
     });
   });
 
-  // =========================================================================
-  // userExists
-  // =========================================================================
+  
+  
+  
 
   describe('userExists', () => {
     it('should return true when user exists in database', async () => {
@@ -827,9 +827,9 @@ describe('tinyland-user-resolution', () => {
     });
   });
 
-  // =========================================================================
-  // getAllUserHandles
-  // =========================================================================
+  
+  
+  
 
   describe('getAllUserHandles', () => {
     it('should return database handles', async () => {
@@ -983,9 +983,9 @@ describe('tinyland-user-resolution', () => {
     });
   });
 
-  // =========================================================================
-  // RESERVED_ROUTES
-  // =========================================================================
+  
+  
+  
 
   describe('RESERVED_ROUTES', () => {
     it('should be an array', () => {
@@ -1029,14 +1029,14 @@ describe('tinyland-user-resolution', () => {
     });
 
     it('should contain exactly the expected number of routes', () => {
-      // Matches the 22 entries in the source
+      
       expect(RESERVED_ROUTES.length).toBe(22);
     });
   });
 
-  // =========================================================================
-  // isReservedRoute
-  // =========================================================================
+  
+  
+  
 
   describe('isReservedRoute', () => {
     it('should return true for a reserved route', () => {
@@ -1093,9 +1093,9 @@ describe('tinyland-user-resolution', () => {
     });
   });
 
-  // =========================================================================
-  // clearUserResolutionCache
-  // =========================================================================
+  
+  
+  
 
   describe('clearUserResolutionCache', () => {
     it('should be callable without error even when cache is empty', () => {
@@ -1132,14 +1132,14 @@ describe('tinyland-user-resolution', () => {
       clearUserResolutionCache();
       await resolveUser('db-clear');
 
-      // Database is always called, not cached
+      
       expect(findMock).toHaveBeenCalledTimes(2);
     });
   });
 
-  // =========================================================================
-  // Integration-style scenarios
-  // =========================================================================
+  
+  
+  
 
   describe('integration scenarios', () => {
     it('should handle a full resolution cycle: db miss -> profile hit', async () => {
@@ -1171,7 +1171,7 @@ describe('tinyland-user-resolution', () => {
     });
 
     it('should handle reconfiguration mid-session', async () => {
-      // First config: user exists in DB
+      
       configure(
         createMockConfig({
           findUserByHandle: vi.fn().mockResolvedValue(makeAdminUser({ handle: 'reconf' })),
@@ -1180,7 +1180,7 @@ describe('tinyland-user-resolution', () => {
       const r1 = await resolveUser('reconf');
       expect(r1!.source).toBe('database');
 
-      // Reconfigure: user no longer in DB, but in profile
+      
       clearUserResolutionCache();
       configure(
         createMockConfig({
@@ -1204,11 +1204,11 @@ describe('tinyland-user-resolution', () => {
       const exists = await userExists('check-resolve');
       expect(exists).toBe(true);
 
-      // Second call should hit cache for the profile part
+      
       const user = await resolveUser('check-resolve');
       expect(user!.handle).toBe('check-resolve');
 
-      // DB is called each time, but profile is cached
+      
       expect(findMock).toHaveBeenCalledTimes(2);
       expect(loadMock).toHaveBeenCalledTimes(1);
     });
@@ -1222,10 +1222,10 @@ describe('tinyland-user-resolution', () => {
 
       const segment = 'admin';
       if (isReservedRoute(segment)) {
-        // In real app, would not call resolveUser for reserved routes
+        
         expect(true).toBe(true);
       } else {
-        // Should not reach here for 'admin'
+        
         expect(true).toBe(false);
       }
     });
@@ -1261,9 +1261,9 @@ describe('tinyland-user-resolution', () => {
     });
   });
 
-  // =========================================================================
-  // Additional edge cases and scenarios for coverage
-  // =========================================================================
+  
+  
+  
 
   describe('additional edge cases', () => {
     it('should resolve database user with extra unknown fields', async () => {
@@ -1384,7 +1384,7 @@ describe('tinyland-user-resolution', () => {
     });
 
     it('should handle resolveUser throwing before configure', async () => {
-      // resetConfig is called in afterEach, so config is null
+      
       resetConfig();
       await expect(resolveUser('anyone')).rejects.toThrow(
         'tinyland-user-resolution: call configure() before use',
@@ -1493,11 +1493,11 @@ describe('tinyland-user-resolution', () => {
         await resolveUser('boundary');
         expect(loadMock).toHaveBeenCalledTimes(1);
 
-        // Advance time exactly to TTL boundary (59999ms < 60000ms)
+        
         mockTime += 59_999;
 
         await resolveUser('boundary');
-        // Should still use cache since 59999 < 60000
+        
         expect(loadMock).toHaveBeenCalledTimes(1);
       } finally {
         Date.now = realDateNow;
@@ -1505,7 +1505,7 @@ describe('tinyland-user-resolution', () => {
     });
 
     it('should handle RESERVED_ROUTES being frozen/immutable (read-only check)', () => {
-      // Verify the constant is an array and can be iterated
+      
       const copy = [...RESERVED_ROUTES];
       expect(copy).toEqual(RESERVED_ROUTES);
       expect(copy.length).toBe(RESERVED_ROUTES.length);
