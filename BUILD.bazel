@@ -45,7 +45,7 @@ npm_package(
         ":tinyland_user_resolution",
     ],
     package = "@tummycrypt/tinyland-user-resolution",
-    version = "0.2.2",
+    version = "0.2.3",
     visibility = ["//visibility:public"],
 )
 
