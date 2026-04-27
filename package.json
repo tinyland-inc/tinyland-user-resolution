@@ -1,6 +1,6 @@
 {
   "name": "@tummycrypt/tinyland-user-resolution",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Unified user resolution across repository-backed directory and profile markdown sources",
   "type": "module",
   "license": "Zlib AND LicenseRef-Tinyland-Proprietary",
