@@ -123,8 +123,8 @@ describe('tinyland-user-resolution', () => {
   
 
   describe('resolveUser', () => {
-    describe('database resolution', () => {
-      it('should resolve a user from the database', async () => {
+    describe('directory resolution', () => {
+      it('should resolve a user from the directory', async () => {
         const dbUser = makeAdminUser({
           id: 'db-1',
           handle: 'alice',
@@ -145,7 +145,7 @@ describe('tinyland-user-resolution', () => {
         const result = await resolveUser('alice');
 
         expect(result).not.toBeNull();
-        expect(result!.source).toBe('database');
+        expect(result!.source).toBe('directory');
         expect(result!.handle).toBe('alice');
         expect(result!.displayName).toBe('Alice Wonderland');
         expect(result!.id).toBe('db-1');
@@ -158,7 +158,7 @@ describe('tinyland-user-resolution', () => {
         expect(result!.dbUser).toBe(dbUser);
       });
 
-      it('should return database user even when profile also exists', async () => {
+      it('should return directory user even when profile also exists', async () => {
         const dbUser = makeAdminUser({ handle: 'bob' });
         configure(
           createMockConfig({
@@ -168,10 +168,10 @@ describe('tinyland-user-resolution', () => {
         );
 
         const result = await resolveUser('bob');
-        expect(result!.source).toBe('database');
+        expect(result!.source).toBe('directory');
       });
 
-      it('should propagate database user fields with minimal data', async () => {
+      it('should propagate directory user fields with minimal data', async () => {
         const dbUser = makeAdminUser({
           handle: 'minimal',
           displayName: 'Min',
@@ -201,7 +201,7 @@ describe('tinyland-user-resolution', () => {
     });
 
     describe('profile resolution', () => {
-      it('should resolve a user from a profile when not in database', async () => {
+      it('should resolve a user from a profile when not in directory', async () => {
         const profile = makeProfile({
           slug: 'rainbow_bird',
           metadata: {
@@ -393,7 +393,7 @@ describe('tinyland-user-resolution', () => {
         expect(result).toBeNull();
       });
 
-      it('should prefer database user over noauth for "admin"', async () => {
+      it('should prefer directory user over noauth for "admin"', async () => {
         const dbAdmin = makeAdminUser({ handle: 'admin', role: 'super_admin' });
         configure(
           createMockConfig({
@@ -403,7 +403,7 @@ describe('tinyland-user-resolution', () => {
         );
 
         const result = await resolveUser('admin');
-        expect(result!.source).toBe('database');
+        expect(result!.source).toBe('directory');
       });
 
       it('should prefer profile user over noauth for "admin"', async () => {
@@ -488,7 +488,7 @@ describe('tinyland-user-resolution', () => {
         errorSpy.mockRestore();
       });
 
-      it('should log warning on database error', async () => {
+      it('should log warning on directory error', async () => {
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
         configure(
           createMockConfig({
@@ -498,7 +498,7 @@ describe('tinyland-user-resolution', () => {
 
         await resolveUser('anyone');
         expect(warnSpy).toHaveBeenCalledWith(
-          '[UserResolution] Error checking database:',
+          '[UserResolution] Error checking directory:',
           expect.any(Error),
         );
         warnSpy.mockRestore();
@@ -756,7 +756,7 @@ describe('tinyland-user-resolution', () => {
       }
     });
 
-    it('should not use profile cache for database users', async () => {
+    it('should not use profile cache for directory users', async () => {
       const dbUser = makeAdminUser({ handle: 'dbonly' });
       const findMock = vi.fn().mockResolvedValue(dbUser);
       const loadMock = vi.fn().mockResolvedValue([]);
@@ -777,7 +777,7 @@ describe('tinyland-user-resolution', () => {
   
 
   describe('userExists', () => {
-    it('should return true when user exists in database', async () => {
+    it('should return true when user exists in directory', async () => {
       configure(
         createMockConfig({
           findUserByHandle: vi.fn().mockResolvedValue(makeAdminUser({ handle: 'exists' })),
@@ -832,7 +832,7 @@ describe('tinyland-user-resolution', () => {
   
 
   describe('getAllUserHandles', () => {
-    it('should return database handles', async () => {
+    it('should return directory handles', async () => {
       configure(
         createMockConfig({
           findAllUsers: vi.fn().mockResolvedValue([
@@ -862,7 +862,7 @@ describe('tinyland-user-resolution', () => {
       expect(handles).toContain('prof2');
     });
 
-    it('should merge database and profile handles', async () => {
+      it('should merge directory and profile handles', async () => {
       configure(
         createMockConfig({
           findAllUsers: vi.fn().mockResolvedValue([makeAdminUser({ handle: 'shared' })]),
@@ -1123,7 +1123,7 @@ describe('tinyland-user-resolution', () => {
       expect(loadMock).toHaveBeenCalledTimes(2);
     });
 
-    it('should not affect database lookups', async () => {
+    it('should not affect directory lookups', async () => {
       const dbUser = makeAdminUser({ handle: 'db-clear' });
       const findMock = vi.fn().mockResolvedValue(dbUser);
       configure(createMockConfig({ findUserByHandle: findMock }));
@@ -1178,7 +1178,7 @@ describe('tinyland-user-resolution', () => {
         }),
       );
       const r1 = await resolveUser('reconf');
-      expect(r1!.source).toBe('database');
+      expect(r1!.source).toBe('directory');
 
       
       clearUserResolutionCache();
@@ -1266,7 +1266,7 @@ describe('tinyland-user-resolution', () => {
   
 
   describe('additional edge cases', () => {
-    it('should resolve database user with extra unknown fields', async () => {
+    it('should resolve directory user with extra unknown fields', async () => {
       const dbUser: AdminUser = {
         id: 'ext-1',
         handle: 'extended',
@@ -1325,7 +1325,7 @@ describe('tinyland-user-resolution', () => {
       expect(result!.source).toBe('profile');
     });
 
-    it('should not leak database user fields into profile resolution', async () => {
+    it('should not leak directory user fields into profile resolution', async () => {
       const profile = makeProfile({
         slug: 'no-leak',
         metadata: { handle: 'no-leak', name: 'No Leak' },
@@ -1362,7 +1362,7 @@ describe('tinyland-user-resolution', () => {
       expect(b!.handle).toBe('user-b');
     });
 
-    it('should handle database user with empty string fields', async () => {
+    it('should handle directory user with empty string fields', async () => {
       const dbUser = makeAdminUser({
         handle: 'empty-fields',
         displayName: '',
