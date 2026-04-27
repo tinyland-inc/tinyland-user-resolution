@@ -30,7 +30,7 @@ export async function resolveUser(handle: string): Promise<ResolvedUser | null> 
       return {
         handle: dbUser.handle,
         displayName: dbUser.displayName,
-        source: 'database',
+        source: 'directory',
         id: dbUser.id,
         role: dbUser.role,
         avatar: dbUser.avatar,
@@ -42,7 +42,7 @@ export async function resolveUser(handle: string): Promise<ResolvedUser | null> 
       };
     }
   } catch (error) {
-    console.warn('[UserResolution] Error checking database:', error);
+    console.warn('[UserResolution] Error checking directory:', error);
     
   }
 
@@ -150,7 +150,7 @@ export async function getAllUserHandles(): Promise<string[]> {
       handles.add(user.handle);
     }
   } catch (error) {
-    console.warn('[UserResolution] Error getting database users:', error);
+    console.warn('[UserResolution] Error getting directory users:', error);
   }
 
   

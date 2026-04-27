@@ -45,7 +45,7 @@ export interface ResolvedUser {
   
   displayName: string;
   
-  source: 'database' | 'profile' | 'noauth';
+  source: 'directory' | 'profile' | 'noauth';
   
   id?: string;
   
